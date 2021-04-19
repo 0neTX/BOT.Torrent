@@ -13,12 +13,16 @@
 
 - Actualizar el fichero de variables de entorno de ejemplo 'enviroment.samples' con los valores:
 
+```ini
+
 TG_API_ID=8979879
 TG_API_HASH=05b8825669ae9dee51934
 TG_BOT_TOKEN=123412341234:218f7e864f2500b544d2f
 TG_DOWNLOAD_PATH=/download
 TG_USER_ID=1341341241234
 TG_USER_NAME='miusuario'
+
+```
 
 - Renombrar el fichero con nombre '.env'
 
