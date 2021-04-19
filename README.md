@@ -13,7 +13,7 @@ Otros colabores: jsavargas,
 1. Crear nuestro BOT en Telegram y obtener su TOKEN. Obtenemos: TG_BOT_TOKEN
 2. Crear nuestra App en Telegram y obtener su api_id y api_hash. 
    Entrar en https://my.telegram.org/auth y generar la api. Obtenemos: TG_API_ID y TG_API_HASH
-3. Obtener user id enviando mensaje a este bot @userinfobot desde Telegram, y te devuelve tu id. Es el ID de telegram. Obtenemos: TG_USER_ID y TG_USER_NAME
+3. Obtener user id enviando mensaje a este bot @userinfobot desde Telegram, y te devuelve tu id. Es el ID de telegram. Obtenemos los usuarios para : TG_USERS_ARRAY
 
 ## Variables de entorno necesarias
 
@@ -25,8 +25,7 @@ TG_API_ID=8979879
 TG_API_HASH=05b8825669ae9dee51934
 TG_BOT_TOKEN=123412341234:218f7e864f2500b544d2f
 TG_DOWNLOAD_PATH=/download
-TG_USER_ID=1341341241234
-TG_USER_NAME='miusuario'
+TG_USERS_ARRAY={"123131" : "usuario1", "212312313" : "usuario2"}
 
 ```
 
@@ -62,9 +61,8 @@ services:
     #    - 'TG_API_ID=168'
     #    - 'TG_API_HASH=3efd8c04ad'
     #    - 'TG_BOT_TOKEN=394:S4zPd09m-p4'
-    #    - 'TG_DOWNLOAD_PATH=/download'         
-    #    - 'TG_USER_ID=9879874654'         
-    #    - TG_USER_NAME='mi_usuario'
+    #    - 'TG_DOWNLOAD_PATH=/download'
+    #    - TG_USERS_ARRAY={"123131" : "usuario1", "212312313" : "usuario2"}
     restart: unless-stopped    
 ```
 

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+
+
+
 LICENCIA = """
 BOT.Torrent - 3.1 :
 Este programa es software GRATUITO: puedes redistribuirlo y/o modificar
@@ -46,6 +50,8 @@ import sys
 import time
 import asyncio
 import cryptg
+import json
+
 # Imports Telethon
 from telethon import TelegramClient, events
 from telethon.tl import types
@@ -75,6 +81,18 @@ download_path = get_env('TG_DOWNLOAD_PATH', 'Enter full path to downloads direct
 download_path_torrent = os.path.join(download_path,"torrent")
 user_tg_id = get_env('TG_USER_ID', 'Enter telegram user id: ', int)
 user_tg_name = get_env('TG_USER_NAME', 'Enter telegram user name: ')
+user_tg_array = get_env('TG_USERS_ARRAY', 'Enter telegram user array: ')
+
+json_acceptable_string = user_tg_array.replace("'", "\"")
+d = json.loads(json_acceptable_string)
+usuarios = { }
+for k, v in d.items():
+	print('Incluyendo usuario:')
+	print(k, v)
+	valuek = int(k)
+	usuarios.update({valuek: v})
+
+print('Usuarios admitidos:'+ usuarios + '\n')
 print("START BOT")
 
 #api_id = 16 # Vuestro api_id. Cambiar
@@ -82,7 +100,9 @@ print("START BOT")
 #bot_token = '3945:09m-p4'
 #download_path = '/download'
 #download_path_torrent = '/volume1/vuestros directorios' # Directorio bajo vigilancia de DSDownload u otro.
-usuarios = {int(user_tg_id) : user_tg_name} # <--- IDs de usuario autorizados. Los mismos de la versión 2.1. Cambiar
+#usuarios = {int(user_tg_id) : user_tg_name} # <--- IDs de usuario autorizados. Los mismos de la versión 2.1. Cambiar
+
+
 
 ##################################################
 ################# LOG
