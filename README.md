@@ -68,6 +68,23 @@ services:
     restart: unless-stopped    
 ```
 
+## Generating Telegram API keys
+
+Before working with Telegram's API, you need to get your own API ID and hash:
+
+1. Go to https://my.telegram.org/ and login with your phone number.
+2. Click under API Development tools.
+3. A *Create new application* window will appear. Fill in your application details. There is no need to enter any *URL*, and only the first two fields (*App title* and *Short name*) can currently be changed later.
+4. Click on *Create application* at the end. Remember that your **API hash is secret** and Telegram won't let you revoke it. Don't post it anywhere!
+
+## Creating a Telegram Bot
+
+1. Open a conversation with [@BotFather](https://telegram.me/botfather) in Telegram
+2. Use the /newbot command to create a new bot. The BotFather will ask you for a name and username, then generate an authorization token for your new bot.
+   The name of your bot is displayed in contact details and elsewhere.
+   The Username is a short name, to be used in mentions and telegram.me links. Usernames are 5-32 characters long and are case insensitive, but may only include Latin characters, numbers, and underscores. Your bot's username must end in ‘bot’, e.g. ‘tetris_bot’ or ‘TetrisBot’.
+   The token is a string along the lines of 110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw that is required to authorize the bot and send requests to the Bot API. Keep your token secure and store it safely, it can be used by anyone to control your bot.
+
 # LICENCIA
 
 Este programa es software GRATUITO: puedes redistribuirlo y/o modificar bajo los términos de la Licencia Pública General GNU publicada por la Free Software Foundation, ya sea la versión 3 de la Licencia, o (a su elección) cualquier versión posterior.
