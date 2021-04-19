@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  bottorrent:
+    container_name: bottorrent
+    build:
+        context: .
+        dockerfile: dockerfile
+    labels:
+        poc.bottorrent.description: "bottorrent container"
+    volumes:
+        - ./data/path:/download        
+        - ./data/log.txt:/app/log.txt
+    env_file:
+        - .env
+    #Alternativamente puedes usar lo siguiente:
+    #environment:
+    #    - 'TG_API_ID=168'
+    #    - 'TG_API_HASH=3efd8c04ad'
+    #    - 'TG_BOT_TOKEN=394:S4zPd09m-p4'
+    #    - 'TG_DOWNLOAD_PATH=/download'         
+    #    - 'TG_USER_ID=9879874654'         
+    #    - TG_USER_NAME='mi_usuario'
+    restart: unless-stopped        
+
+# docker run --rm -it --name bottorrent --env-file .env -v ./data/path:/download bottorrent /bin/sh
+    

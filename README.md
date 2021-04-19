@@ -1,5 +1,11 @@
 # BOT.Torrent - 3.1
 
+## Creditos
+
+Todo el merito de este script corresponde a Dekkar.
+
+Otros colabores: jsavargas, 
+
 ## Manual de uso
 
 ### Pasos previos
@@ -43,9 +49,7 @@ version: "3.9"
 services:
   bottorrent:
     container_name: bottorrent
-    build:
-        context: .
-        dockerfile: dockerfile
+    image: 0netx/bottorrent
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
