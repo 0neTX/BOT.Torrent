@@ -13,16 +13,16 @@ ENV TG_DOWNLOAD_PATH=/download
 COPY --chown=bottorrent:bottorrent bottorrent.py /app/bottorrent.py
 
 RUN set -e; \
-    mkdir /{app,watch,$TG_DOWNLOAD_PATH}; \
+    mkdir /{watch,${TG_DOWNLOAD_PATH}}; \
     addgroup --gid $GID bottorrent; \
     useradd -m -u $UID -g $GID -d /app bottorrent; \
-    chown -R bottorrent:bottorrent /app; \
+    chown -R bottorrent:bottorrent /app ${TG_DOWNLOAD_PATH} /watch; \
     chmod 555 /app/bottorrent.py 
 
 WORKDIR /app
 
 USER bottorrent
 
-VOLUME [$TG_DOWNLOAD_PATH, "/watch"]
+VOLUME [${TG_DOWNLOAD_PATH}, "/watch"]
 
 ENTRYPOINT ["python","/app/bottorrent.py"]
