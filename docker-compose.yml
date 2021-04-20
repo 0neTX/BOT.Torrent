@@ -6,8 +6,8 @@ services:
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
-        - ./data/path:/download        
-        - ./data/log.txt:/app/log.txt
+        - ./data/path:/download
+        - ./data/watch:/watch
     env_file:
         - .env
     restart: unless-stopped        

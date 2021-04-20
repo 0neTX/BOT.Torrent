@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-
-
-
-
 LICENCIA = """
 BOT.Torrent - 3.1 :
 Este programa es software GRATUITO: puedes redistribuirlo y/o modificar
@@ -45,16 +41,29 @@ AYUDA = """BOT.Torrent - 3.1 :
 /start      : LICENCIA GPL, de este programa.
 /instalar   : Guía para instalar este programa.  
 """
+import re
 import os
+import shutil
 import sys
 import time
 import asyncio
 import cryptg
-import json
-
 # Imports Telethon
 from telethon import TelegramClient, events
 from telethon.tl import types
+from telethon.utils import get_extension
+
+import logging
+'''
+LOGGER
+'''
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+    '%(asctime)s [%(name)-12s] %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 # Variables de cada usuario ######################
 # This is a helper method to access environment variables or
@@ -76,46 +85,32 @@ session = os.environ.get('TG_SESSION', 'bottorrent_downloader')
 api_id = get_env('TG_API_ID', 'Enter your API ID: ', int)
 api_hash = get_env('TG_API_HASH', 'Enter your API hash: ')
 bot_token = get_env('TG_BOT_TOKEN', 'Enter your Telegram BOT token: ')
+TG_AUTHORIZED_USER_ID = get_env('TG_AUTHORIZED_USER_ID', 'Enter your Telegram BOT token: ')
 download_path = get_env('TG_DOWNLOAD_PATH', 'Enter full path to downloads directory: ')
-#download_path_torrent 	= get_env('TG_DOWNLOAD_PATH_TORRENT', 'Enter full path to downloads directory: ')
-download_path_torrent = os.path.join(download_path,"torrent")
-user_tg_id = get_env('TG_USER_ID', 'Enter telegram user id: ', int)
-user_tg_name = get_env('TG_USER_NAME', 'Enter telegram user name: ')
-user_tg_array = get_env('TG_USERS_ARRAY', 'Enter telegram user array: ')
 
-json_acceptable_string = user_tg_array.replace("'", "\"")
-d = json.loads(json_acceptable_string)
-usuarios = { }
-for k, v in d.items():
-	print('Incluyendo usuario:')
-	print(k, v)
-	valuek = int(k)
-	usuarios.update({valuek: v})
+download_path_torrent = '/watch' # Directorio bajo vigilancia de DSDownload u otro.
 
-print('Usuarios admitidos:'+ usuarios + '\n')
-print("START BOT")
+logger.info('TG_API_ID: %s',api_id)
+logger.info('TG_API_HASH: %s',api_hash)
+logger.info('TG_BOT_TOKEN: %s',bot_token)
+logger.info('TG_DOWNLOAD_PATH: %s',download_path)
+logger.info('TG_AUTHORIZED_USER_ID: %s',TG_AUTHORIZED_USER_ID)
+logger.info('download_path_torrent: %s',download_path_torrent)
 
-#api_id = 16 # Vuestro api_id. Cambiar
-#api_hash = '3eff5504ad'
+#api_id = 161 # Vuestro api_id. Cambiar
+#api_hash = '3ef04ad'
 #bot_token = '3945:09m-p4'
 #download_path = '/download'
 #download_path_torrent = '/volume1/vuestros directorios' # Directorio bajo vigilancia de DSDownload u otro.
-#usuarios = {int(user_tg_id) : user_tg_name} # <--- IDs de usuario autorizados. Los mismos de la versión 2.1. Cambiar
+#usuarios = {6537361:'yo'} # <--- IDs de usuario autorizados. Los mismos de la versión 2.1. Cambiar
+usuarios = list(map(int, TG_AUTHORIZED_USER_ID.replace(" ", "").split(','))) 
+logger.info('TG_AUTHORIZED_USER_ID: %s',usuarios)
 
-
-
-##################################################
-################# LOG
-import logging
-f = open( 'log.txt', 'a')
-# Creación del logger que muestra la información únicamente por fichero.
-logging.basicConfig(format = '[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',	level = logging.ERROR, filename = 'logs_info.txt', filemode = 'a')
-logger = logging.getLogger(__name__)
-################# LOG
 # Cola de descargas.
 queue = asyncio.Queue()
-number_of_parallel_downloads = 4
-maximum_seconds_per_download = 3600
+number_of_parallel_downloads = int(os.environ.get('TG_MAX_PARALLEL',4))
+maximum_seconds_per_download = int(os.environ.get('TG_DL_TIMEOUT',3600))
+
 # Directorio temporal
 tmp_path = os.path.join(download_path,'tmp')
 
@@ -132,23 +127,29 @@ async def worker(name):
 		update = queue_item[0]
 		message = queue_item[1]
 		# Comprobación de usuario
-		if message.peer_id.user_id not in usuarios: 
+		if message.peer_id.user_id not in usuarios:
+			logger.info('USUARIO: %s NO AUTORIZADO', message.peer_id.user_id)
 			print('Usuario ', message.peer_id.user_id, ' no autorizado.')
-			f.write('Usuario ', message.peer_id.user_id, ' no autorizado.\n')
-			await message.edit('Error!')
-			message = await update.reply('Usuario ', message.peer_id.user_id, ' no autorizado.')
 			continue
 		###
 		file_path = tmp_path;
 		file_name = 'Fichero ...';
-		attributes = update.message.media.document.attributes
-		for attr in attributes:
-			if isinstance(attr, types.DocumentAttributeFilename):
-				file_name = attr.file_name
-				file_path = os.path.join(file_path, attr.file_name)
+		if isinstance(update.message.media, types.MessageMediaPhoto):
+			file_name = '{}{}'.format(update.message.media.photo.id, get_extension(update.message.media))
+		else:
+			attributes = update.message.media.document.attributes
+			for attr in attributes:
+				if isinstance(attr, types.DocumentAttributeFilename):
+					file_name = attr.file_name
+				elif update.message.message:
+					file_name = re.sub(r'[^A-Za-z0-9 -!\[\]\(\)]+', ' ', update.message.message)
+				else:
+					file_name = time.strftime('%Y%m%d %H%M%S', time.localtime())
+					file_name = '{}{}'.format(update.message.media.document.id, get_extension(update.message.media))
+		file_path = os.path.join(file_path, file_name)
 		await message.edit('Descargando ... ')
-		mensaje = '[%s] Descarga iniciada %s por %s ...' % (file_name, time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()), usuarios.get(message.peer_id.user_id))
-		f.write(mensaje + '\n')
+		mensaje = '[%s] Descarga iniciada %s por %s ...' % (file_path, time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()), (message.peer_id.user_id))
+		logger.info(mensaje )
 		try:
 			loop = asyncio.get_event_loop()
 			task = loop.create_task(client.download_media(update.message, file_path))
@@ -161,14 +162,19 @@ async def worker(name):
 			if filename.endswith('.mp3') or filename.endswith('.flac'): final_path = os.path.join(download_path,"mp3", filename)
 			# Ficheros .pdf y .cbr
 			if filename.endswith('.pdf') or filename.endswith('.cbr'): final_path = os.path.join(download_path,"pdf", filename)
+			# Ficheros .jpg
+			if filename.endswith('.jpg'): 
+				os.makedirs(os.path.join(download_path,'jpg'), exist_ok = True)
+				final_path = os.path.join(download_path,"jpg", filename)
 			# Ficheros .torrent
 			if filename.endswith('.torrent'): final_path = os.path.join(download_path_torrent, filename)
-			###### 
-			os.rename(download_result, final_path)
+			######
+			logger.info("RENAME/MOVE [%s] [%s]" % (download_result, final_path) )
+			shutil.move(download_result, final_path)
 			######
 			mensaje = '[%s] Descarga terminada %s' % (file_name, end_time)
-			f.write(mensaje + '\n')
-			await message.edit('Descarga terminada %s' % (end_time_short))
+			logger.info(mensaje )
+			await message.edit('Descarga %s terminada %s' % (file_name,end_time_short))
 		except asyncio.TimeoutError:
 			print('[%s] Tiempo excedido %s' % (file_name, time.strftime('%d/%m/%Y %H:%M:%S', time.localtime())))
 			await message.edit('Error!')
@@ -188,14 +194,21 @@ client = TelegramClient(session, api_id, api_hash, proxy = None, request_retries
 @events.register(events.NewMessage)
 async def handler(update):
 	
-	if update.message.media is not None and update.message.peer_id.user_id in usuarios:
+	if update.message.media is not None and update.message.peer_id.user_id in usuarios and isinstance(update.message.media, types.MessageMediaPhoto):
+		file_name = '{}{}'.format(update.message.media.photo.id, get_extension(update.message.media))
+		logger.info("MessageMediaPhoto  [%s]" % file_name)
+		message = await update.reply('En cola...')
+		await queue.put([update, message])
+	elif update.message.media is not None and update.message.peer_id.user_id in usuarios:
 		file_name = 'sin nombre';
 		attributes = update.message.media.document.attributes
 		for attr in attributes:
 			if isinstance(attr, types.DocumentAttributeFilename):
 				file_name = attr.file_name
-		mensaje = '[%s] Descarga en cola %s' % (file_name, time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()))
-		f.write(mensaje + '\n')
+			elif update.message.message:
+				file_name = re.sub(r'[^A-Za-z0-9 -!\[\]\(\)]+', ' ', update.message.message)
+		mensaje = '[%s] Descarga en cola %s ' % (file_name, time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()))
+		logger.info(mensaje)
 		message = await update.reply('En cola...')
 		await queue.put([update, message])
 	elif update.message.peer_id.user_id in usuarios:
@@ -213,12 +226,11 @@ async def handler(update):
 			message = await update.reply('Eco del BOT: ' + update.message.message)
 			await queue.put([update, message])
 			print('Eco del BOT: ' + update.message.message)
+	else:
+		logger.info('USUARIO: %s NO AUTORIZADO', update.message.peer_id.user_id)
 
 try:
 	# Crear cola de procesos concurrentes.
-	f.write('Starting logs...\n')
-	print('Starting console...\n')
-	logger.debug("Starting logger...")	
 	tasks = []
 	for i in range(number_of_parallel_downloads):
 		loop = asyncio.get_event_loop()
@@ -231,10 +243,11 @@ try:
 
 	# Pulsa Ctrl+C para detener
 	print('Arranque correcto!! (Pulsa Ctrl+C para detener)')
+	logger.info("START BOT")
+
 	client.run_until_disconnected()
 finally:
 	# Cerrando trabajos.
-	f.close()
 	for task in tasks:
 		task.cancel()
 	# Cola cerrada

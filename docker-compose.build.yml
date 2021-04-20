@@ -8,8 +8,8 @@ services:
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
-        - ./data/path:/download        
-        - ./data/log.txt:/app/log.txt
+        - ./data/path:/download
+        - ./data/watch:/watch
     env_file:
         - .env
     #Alternativamente puedes usar lo siguiente:
@@ -18,7 +18,7 @@ services:
     #    - 'TG_API_HASH=3efd8c04ad'
     #    - 'TG_BOT_TOKEN=394:S4zPd09m-p4'
     #    - 'TG_DOWNLOAD_PATH=/download'         
-    #    - 'TG_USER_ID=9879874654'         
+    #    - 'TG_AUTHORIZED_USER_ID=1234567,12345679'        
     #    - TG_USER_NAME='mi_usuario'
     restart: unless-stopped        
 

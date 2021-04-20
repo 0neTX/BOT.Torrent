@@ -13,7 +13,20 @@ Otros colabores: jsavargas,
 1. Crear nuestro BOT en Telegram y obtener su TOKEN. Obtenemos: TG_BOT_TOKEN
 2. Crear nuestra App en Telegram y obtener su api_id y api_hash. 
    Entrar en https://my.telegram.org/auth y generar la api. Obtenemos: TG_API_ID y TG_API_HASH
-3. Obtener user id enviando mensaje a este bot @userinfobot desde Telegram, y te devuelve tu id. Es el ID de telegram. Obtenemos los usuarios para : TG_USERS_ARRAY
+   Manuales más detallados en: 
+   Para la app de Telegram debemos ir a la web https://my.telegram.org/auth, nos identificamos con nuestro número.
+    ![](assets/c1.png)
+    Confirmamos con la clave que nos enviarán por mensaje a Telegram
+    ![](assets/c2.png)
+    Luego vamos a la sección de API
+    ![](assets/c3.png)
+    Y se nos presenta los dos valores que nos interesan. Api_id y Api_hash.
+    ![](assets/c4.png)
+    Estos valores no debemos difundirlos... son únicos y NO podemos cambiarlos. Es decir no hay revocación posible como ocurre con el token.
+    Estos valores deberemos anotarlos ya que tendremos que utilizarlos en las variables de entorno TG_API_ID y TG_API_HASH
+
+3. Obtener user id enviando mensaje a este bot @userinfobot desde Telegram, y te devuelve tu id. 
+    Es el ID de telegram. Obtenemos los usuarios para : TG_USERS_ARRAY
 
 ## Variables de entorno necesarias
 
@@ -25,7 +38,7 @@ TG_API_ID=8979879
 TG_API_HASH=05b8825669ae9dee51934
 TG_BOT_TOKEN=123412341234:218f7e864f2500b544d2f
 TG_DOWNLOAD_PATH=/download
-TG_USERS_ARRAY={"123131" : "usuario1", "212312313" : "usuario2"}
+TG_AUTHORIZED_USER_ID=1234567,12345679
 
 ```
 
@@ -36,7 +49,7 @@ TG_USERS_ARRAY={"123131" : "usuario1", "212312313" : "usuario2"}
 Ejecutar utilizando fichero de entorno llamado '.env'
 
 ```bash
-docker run --rm -it --name bottorrent --env-file .env -v ./data/path:/download bottorrent /bin/sh
+docker run --rm -it --name bottorrent --env-file .env -v $pwd/data/path:/download  -v $pwd/data/watch:/watch bottorrent
 ```
 
 ### Ejecutar mediante Docker Compose
@@ -52,8 +65,8 @@ services:
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
-        - ./data/path:/download        
-        - ./data/log.txt:/app/log.txt
+        - ./data/path:/download
+        - ./data/watch:/watch        
     env_file:
         - .env
     #Alternativamente puedes usar lo siguiente:
@@ -62,18 +75,9 @@ services:
     #    - 'TG_API_HASH=3efd8c04ad'
     #    - 'TG_BOT_TOKEN=394:S4zPd09m-p4'
     #    - 'TG_DOWNLOAD_PATH=/download'
-    #    - TG_USERS_ARRAY={"123131" : "usuario1", "212312313" : "usuario2"}
+    #    - TG_AUTHORIZED_USER_ID=1234567,12345679
     restart: unless-stopped    
 ```
-
-## Generating Telegram API keys
-
-Before working with Telegram's API, you need to get your own API ID and hash:
-
-1. Go to https://my.telegram.org/ and login with your phone number.
-2. Click under API Development tools.
-3. A *Create new application* window will appear. Fill in your application details. There is no need to enter any *URL*, and only the first two fields (*App title* and *Short name*) can currently be changed later.
-4. Click on *Create application* at the end. Remember that your **API hash is secret** and Telegram won't let you revoke it. Don't post it anywhere!
 
 ## Creating a Telegram Bot
 
