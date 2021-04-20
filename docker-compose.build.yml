@@ -8,8 +8,8 @@ services:
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
-        - ./data/path:/download
-        - ./data/watch:/watch
+        - ./data/path:/var/download
+        - ./data/watch:/var/watch
     env_file:
         - .env
     #Alternativamente puedes usar lo siguiente:

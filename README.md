@@ -37,9 +37,19 @@ Otros colabores: jsavargas,
 TG_API_ID=8979879
 TG_API_HASH=05b8825669ae9dee51934
 TG_BOT_TOKEN=123412341234:218f7e864f2500b544d2f
-TG_DOWNLOAD_PATH=/download
+TG_DOWNLOAD_PATH=/var/download
 TG_AUTHORIZED_USER_ID=1234567,12345679
+PUID=1000
+PGID=1000
 
+```
+
+Las variables PUID y PGID corresponden al usuario 'appuser' del contenedor. Estos valores no hay que modificarlos.
+
+```bash
+$ id appuser
+Tue Apr 20 19:02:31 UTC 2021
+uid=1000(appuser) gid=1000(appuser) groups=1000(appuser)
 ```
 
 - Renombrar el fichero con nombre '.env'
@@ -49,7 +59,7 @@ TG_AUTHORIZED_USER_ID=1234567,12345679
 Ejecutar utilizando fichero de entorno llamado '.env'
 
 ```bash
-docker run --rm -it --name bottorrent --env-file .env -v $pwd/data/path:/download  -v $pwd/data/watch:/watch 0netx/bottorrent
+docker run --rm -it --name bottorrent --env-file .env -v $pwd/data/path:/var/download  -v $pwd/data/watch:/var/watch 0netx/bottorrent
 ```
 
 ### Ejecutar mediante Docker Compose
@@ -65,8 +75,8 @@ services:
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
-        - ./data/path:/download
-        - ./data/watch:/watch        
+        - ./data/path:/var/download
+        - ./data/watch:/var/watch        
     env_file:
         - .env
     #Alternativamente puedes usar lo siguiente:
@@ -76,6 +86,8 @@ services:
     #    - 'TG_BOT_TOKEN=394:S4zPd09m-p4'
     #    - 'TG_DOWNLOAD_PATH=/download'
     #    - TG_AUTHORIZED_USER_ID=1234567,12345679
+    #    - PUID=1000
+    #    - PGID=1000
     restart: unless-stopped    
 ```
 
