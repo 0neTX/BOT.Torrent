@@ -4,7 +4,7 @@
 
 Todo el merito de este script corresponde a Dekkar.
 
-Otros colabores: jsavargas, 
+Otros colabores: jsavargas,
 
 ## Manual de uso
 
@@ -49,7 +49,7 @@ TG_AUTHORIZED_USER_ID=1234567,12345679
 Ejecutar utilizando fichero de entorno llamado '.env'
 
 ```bash
-docker run --rm -it --name bottorrent --env-file .env -v $pwd/data/path:/download  -v $pwd/data/watch:/watch bottorrent
+docker run --rm -it --name bottorrent --env-file .env -v $pwd/data/path:/download  -v $pwd/data/watch:/watch 0netx/bottorrent
 ```
 
 ### Ejecutar mediante Docker Compose
