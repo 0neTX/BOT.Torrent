@@ -88,7 +88,7 @@ bot_token = get_env('TG_BOT_TOKEN', 'Enter your Telegram BOT token: ')
 TG_AUTHORIZED_USER_ID = get_env('TG_AUTHORIZED_USER_ID', 'Enter your Telegram BOT token: ')
 download_path = get_env('TG_DOWNLOAD_PATH', 'Enter full path to downloads directory: ')
 
-download_path_torrent = '/watch' # Directorio bajo vigilancia de DSDownload u otro.
+download_path_torrent = os.getenv('TG_WATCH_PATH', "/var/watch") # Directorio bajo vigilancia de DSDownload u otro.
 
 logger.info('TG_API_ID: %s',api_id)
 logger.info('TG_API_HASH: %s',api_hash)
