@@ -73,83 +73,31 @@ from telethon.tl import types
 from telethon.utils import get_extension, get_peer_id, resolve_id
 carpeta_tmp = ''
 date_control = ''
-
-'''
-LOGGER
-'''
-import logging
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    '%(asctime)s [%(name)-12s] %(levelname)-8s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
-################# LOG
-
 # Variables de cada usuario ######################
-# This is a helper method to access environment variables or
-# prompt the user to type them in the terminal if missing.
-def get_env(name, message, cast=str):
-    if name in os.environ:
-        print("os.environ[name]",name,os.environ[name])
-        return os.environ[name]
-    while True:
-        value = input(message)
-        try:
-            return cast(value)
-        except ValueError as e:
-            print(e, file=sys.stderr)
-            time.sleep(1)
-
-# Define some variables so the code reads easier
-session = os.environ.get('TG_SESSION', 'bottorrent_downloader')
-api_id = get_env('TG_API_ID', 'Enter your API ID: ', int)
-api_hash = get_env('TG_API_HASH', 'Enter your API hash: ')
-bot_token = get_env('TG_BOT_TOKEN', 'Enter your Telegram BOT token: ')
-TG_AUTHORIZED_USER_ID = get_env('TG_AUTHORIZED_USER_ID', 'Enter your Telegram BOT token: ')
-download_path = get_env('TG_DOWNLOAD_PATH', 'Enter full path to downloads directory: ')
-download_path_torrent = os.getenv('TG_WATCH_PATH', "/var/watch") # Directorio bajo vigilancia de DSDownload u otro.
-download_path_mp3 = get_env('TG_DOWNLOAD_PATH_MP3', 'Enter full path to downloads MP3: ')
-download_path_pdf = get_env('TG_DOWNLOAD_PATH_PDF', 'Enter full path to downloads PDF: ')
-
-logger.info('TG_API_ID: %s',api_id)
-logger.info('TG_API_HASH: %s',api_hash)
-logger.info('TG_BOT_TOKEN: %s',bot_token)
-logger.info('TG_DOWNLOAD_PATH: %s',download_path)
-logger.info('TG_WATCH_PATH: %s',download_path_torrent)
-logger.info('TG_DOWNLOAD_PATH_MP3: %s',download_path_mp3)
-logger.info('TG_DOWNLOAD_PATH_PDF: %s',download_path_pdf)
-logger.info('TG_AUTHORIZED_USER_ID: %s',TG_AUTHORIZED_USER_ID)
-
-#api_id = 161 # Vuestro api_id. Cambiar
-#api_hash = '3ef04ad'
-#bot_token = '3945:09m-p4'
-#download_path = '/download'
-#download_path_torrent = '/volume1/vuestros directorios' # Directorio bajo vigilancia de DSDownload u otro.
-#usuarios = {6537361:'yo'} # <--- IDs de usuario autorizados. Los mismos de la versión 2.1. Cambiar
-usuarios = list(map(int, TG_AUTHORIZED_USER_ID.replace(" ", "").split(','))) 
-logger.info('TG_AUTHORIZED_USER_ID: %s',usuarios)
+session = 'Nombre script sin extension' # Nombre script sin extension
+api_id = 6969696969 # Vuestro api_id. Cambiar
+api_hash = 'Vuestro api_hash de vuestra app'
+bot_token = 'El TOKEN de vuestro BOT'
+download_path = '/volume1/vuestros directorios'
+download_path_torrent = '/volume1/vuestros directorios' # Directorio bajo vigilancia de DSDownload u otro.
+download_path_mp3 = '/volume1/vuestros directorios'
+download_path_pdf = '/volume1/vuestros directorios'
+usuarios = {45643576758 : 'Yo', 98766754321 : 'Papa', 987765321 : 'Mi primo'} # <--- IDs de usuario autorizados. Los mismos de la versión 2.1. Cambiar
 ##################################################
-
+################# LOG
+import logging
+f = open( 'log.txt', 'a')
+# Creación del logger que muestra la información únicamente por fichero.
+logging.basicConfig(format = '[%(levelname) 5s/%(asctime)s] %(name)s: %(message)s',	level = logging.ERROR, filename = 'log_info.txt', filemode = 'a')
+logger = logging.getLogger(__name__)
+################# LOG
 # Cola de descargas temporales.
 queue = asyncio.Queue()
-number_of_parallel_downloads = int(os.environ.get('TG_MAX_PARALLEL',1))
-maximum_seconds_per_download = int(os.environ.get('TG_DL_TIMEOUT',3600))
-
+number_of_parallel_downloads = 4
+maximum_seconds_per_download = 3600
 # Directorio temporal
-if not os.path.exists(download_path):
-	os.makedirs(download_path, exist_ok = True)
-if not os.path.exists(download_path_torrent):
-	os.makedirs(download_path_torrent, exist_ok = True)
-if not os.path.exists(download_path_mp3):
-	os.makedirs(download_path_mp3, exist_ok = True)
-if not os.path.exists(download_path_pdf):	
-	os.makedirs(download_path_pdf, exist_ok = True)
 tmp_path = os.path.join(download_path,'tmp')
-if not os.path.exists(tmp_path):
-	os.makedirs(tmp_path, exist_ok = True)
-
+os.makedirs(tmp_path, exist_ok = True)
 
 #Envío de msg directo al primer usuario:
 async def msg_dir(msg):
@@ -197,8 +145,9 @@ async def worker(name):
 					file_name = attr.file_name
 					file_path = os.path.join(file_path, attr.file_name)
 		await message.edit('Descargando ... ')
-		mensaje = '[%s] Descarga de %s, iniciada por %s ...' % (time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()), file_name, message.peer_id.user_id)
-		logger.info(mensaje + '\n')		
+		mensaje = '[%s] Descarga de %s, iniciada por %s ...' % (time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()), file_name, usuarios.get(message.peer_id.user_id))
+		f.write(mensaje + '\n')
+		f.flush()
 		try:
 			loop = asyncio.get_event_loop()
 			#task = loop.create_task(client.download_media(update.message, file_path))
@@ -239,7 +188,8 @@ async def worker(name):
 			######
 			
 			mensaje = '[%s] Descarga %s terminada. ' % (end_time, file_name)
-			logger.info(mensaje + '\n')
+			f.write(mensaje + '\n')
+			f.flush()
 			await message.edit('Descarga terminada %s' % (end_time_short))
 		except asyncio.TimeoutError:
 			print('[%s] Tiempo excedido en %s' % (time.strftime('%d/%m/%Y %H:%M:%S', time.localtime())), file_name)
@@ -276,7 +226,8 @@ async def handler(update):
 		message = await update.reply('En cola...')
 		await queue.put([update, message, carpeta_tmp])
 		mensaje = '[%s] Descarga en cola %s' % (time.strftime('%d/%m/%Y %H:%M:%S', time.localtime()), file_name)
-		logger.info(mensaje + '\n')		
+		f.write(mensaje + '\n')
+		f.flush()
 	elif update.message.message and id_user in usuarios:
 		if update.message.message == '/ayuda':
 			message = await update.reply(AYUDA) 
@@ -338,6 +289,7 @@ try:
 	
 finally:
 	# Cerrando trabajos.
+	f.close()
 	for task in tasks:
 		task.cancel()
 	# Cola cerrada

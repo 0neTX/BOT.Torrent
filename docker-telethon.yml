@@ -14,7 +14,7 @@ services:
       - 'TG_API_ID=234234234'
       - 'TG_API_HASH=8743b52063cd84097a65d1633f5c74f5'
       - 'TG_BOT_TOKEN=1234567:01dfae6e5d4d90d9892622325959afbe'
-      - 'YOUTUBE_LINKS_SOPORTED=youtube.com,youtu.be,pornhub.com'
+      - 'YOUTUBE_LINKS_SOPORTED=youtube.com,youtu.be'
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - ./data/path:/download

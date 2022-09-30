@@ -1,4 +1,4 @@
-# BOT.Torrent - 3.2
+# BOT.Torrent - 3.3
 
 ## Creditos
 
@@ -38,6 +38,9 @@ TG_API_ID=8979879
 TG_API_HASH=05b8825669ae9dee51934
 TG_BOT_TOKEN=123412341234:218f7e864f2500b544d2f
 TG_DOWNLOAD_PATH=/var/download
+TG_DOWNLOAD_PATH_MP3=/var/download/mp3
+TG_DOWNLOAD_PATH_PDF=/var/download/pdf
+TG_WATCH_PATH=/var/watch
 TG_AUTHORIZED_USER_ID=1234567,12345679
 PUID=1000
 PGID=1000
@@ -71,7 +74,7 @@ version: "3.9"
 services:
   bottorrent:
     container_name: bottorrent
-    image: 0netx/bottorrent
+    image: 0netx/bottorrent:3.3
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:

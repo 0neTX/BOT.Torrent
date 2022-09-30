@@ -25,6 +25,6 @@ WORKDIR /app
 
 USER bottorrent
 
-VOLUME [${TG_DOWNLOAD_PATH}, ${TG_WATCH_PATH}]
+VOLUME ${TG_DOWNLOAD_PATH} ${TG_WATCH_PATH}
 
 ENTRYPOINT ["python","/app/bottorrent.py"]
