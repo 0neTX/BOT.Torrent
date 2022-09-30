@@ -1,10 +1,10 @@
-# BOT.Torrent - 3.1
+# BOT.Torrent - 3.2
 
 ## Creditos
 
 Todo el merito de este script corresponde a Dekkar.
 
-Otros colabores: jsavargas,
+Otros colabores: jsavargas,killua99
 
 ## Manual de uso
 
@@ -44,7 +44,7 @@ PGID=1000
 
 ```
 
-Las variables PUID y PGID corresponden al usuario 'appuser' del contenedor. Estos valores no hay que modificarlos.
+Las variables PUID y PGID corresponden al usuari4o 'appuser' del contenedor. Estos valores no hay que modificarlos.
 
 ```bash
 $ id appuser

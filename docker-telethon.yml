@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  telethon_downloader:
+    image: jsavargas/telethon_downloader
+    container_name: telethon_downloader
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+        - .env
+    environment:
+      - 'PUID=1000'
+      - 'PGID=1000'
+      - 'TG_AUTHORIZED_USER_ID=1234567,3334567'
+      - 'TG_API_ID=234234234'
+      - 'TG_API_HASH=8743b52063cd84097a65d1633f5c74f5'
+      - 'TG_BOT_TOKEN=1234567:01dfae6e5d4d90d9892622325959afbe'
+      - 'YOUTUBE_LINKS_SOPORTED=youtube.com,youtu.be,pornhub.com'
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - ./data/path:/download
+      - ./data/watch:/watch

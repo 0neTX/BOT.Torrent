@@ -2,9 +2,10 @@ version: "3.9"
 services:
   bottorrent:
     container_name: bottorrent
+    image: bottorrent:3.2
     build:
         context: .
-        dockerfile: Dockerfile
+        dockerfile: Dockerfile        
     labels:
         poc.bottorrent.description: "bottorrent container"
     volumes:
